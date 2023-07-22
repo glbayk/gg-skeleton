@@ -1,0 +1,47 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:14.0-alpine
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+    ports:
+      - 5433:5432
+    env_file:
+      - .env
+    volumes:
+      - ./db-data/postgres:/var/lib/postgresql/data
+
+  mailhog:
+    image: mailhog/mailhog:latest
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+    ports:
+      - 5672:5672
+      - 15672:15672
+    volumes:
+      - ./db-data/rabbitmq:/var/lib/rabbitmq
+      - ./db-data/rabbitmq-logs:/var/log/rabbitmq
+
+  mongo:
+    image: "mongo:latest"
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: mongo
+      MONGO_INITDB_ROOT_PASSWORD: mongo
+      MONGO_INITDB_DATABASE: logs
+    volumes:
+      - ./db-data/mongo:/data/db

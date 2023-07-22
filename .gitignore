@@ -19,3 +19,8 @@
 
 # Go workspace file
 go.work
+
+# Database file
+db-data/
+tmp/
+.vscode/
